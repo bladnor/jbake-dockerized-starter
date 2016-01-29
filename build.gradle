@@ -1,0 +1,31 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'org.jbake:jbake-core:2.4.0'
+        classpath 'org.asciidoctor:asciidoctorj:1.5.4'
+        classpath 'org.freemarker:freemarker:2.3.23'
+
+
+        classpath 'se.transmode.gradle:gradle-docker:1.2'
+        classpath 'me.champeau.gradle:jbake-gradle-plugin:0.2'
+    }
+}
+apply plugin: 'docker'
+apply plugin: 'me.champeau.jbake'
+
+group = "mygroup"
+
+task buildDocker(type: Docker, dependsOn: jbake) {
+    push = false
+    applicationName = rootProject.name
+    dockerfile = file('src/Dockerfile')
+    doFirst {
+        copy {
+            from jbake
+            into new File(stageDir, "jbake")
+        }
+    }
+}
